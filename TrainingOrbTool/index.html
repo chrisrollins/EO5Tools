@@ -68,12 +68,8 @@
 						else if(running)
 						{
 							currentTime--;
-							time_needed_display.innerText = formatTime(currentTime);
 							setTimeout(tick, 1000);
-						}
-						else
-						{
-							time_needed_display.innerText = formatTime(startingTime);
+							time_needed_display.innerText = formatTime(currentTime);
 						}
 					}
 
@@ -83,14 +79,25 @@
 							if(!running)
 							{
 								running = true;
-								currentTime = startingTime;
-								time_needed_display.innerText = formatTime(startingTime);
 								setTimeout(tick, 1000);
+								timer_start_button.style.display = "none";
+								timer_stop_button.style.display = "inline-block";
+								timer_reset_button.style.display = "inline-block";
 							}
 						},
 						stop: function()
 						{
 							running = false;
+							timer_stop_button.style.display = "none";
+							timer_start_button.style.display = "inline-block";
+						},
+						reset: function()
+						{
+							currentTime = startingTime;
+							time_needed_display.innerText = formatTime(currentTime);
+							running = false;
+							timer_stop_button.style.display = "none";
+							timer_start_button.style.display = "inline-block";
 						},
 						setTime: function(seconds)
 						{
@@ -118,23 +125,24 @@
 						{
 							steps_needed_display.innerText = stepsNeeded + " steps";
 							time_needed_display.innerText = timeString;
-							timer_button.style.display = "inline-block";
+							timer_start_button.style.display = "inline-block";
 						}
 						else
 						{
 							steps_needed_display.innerText = "";
 							time_needed_display.innerText = "";
-							timer_button.style.display = "none";
+							timer_start_button.style.display = "none";
 						}
 					}
 				};
 
 				onmouseup = function(e)
 				{
-					if(e.target === timer_button)
-					{
-						timer.start();
-					}
+					(({
+						timer_start_button: timer.start.bind(null),
+						timer_stop_button: timer.stop.bind(null),
+						timer_reset_button: timer.reset.bind(null)
+					})[e.target.id] || function(){})();
 				};
 			}
 		})();
@@ -183,7 +191,7 @@
 			display: none;
 			position: fixed;
 		}
-		#timer_button
+		.timer_button
 		{
 			display: none;
 		}
@@ -211,7 +219,8 @@
 	</div>
 	<div id="results">
 		<div id="steps_needed_display"></div>
-		<div><span id="time_needed_display"></span><button id="timer_button">start</button></div>
+		<div id="time_needed_display"></div>
+		<button class="timer_button" id="timer_start_button">start</button><button class="timer_button" id="timer_stop_button">stop</button><button class="timer_button" id="timer_reset_button">reset</button>
 	</div>
 </div>
 <noscript>This tool uses JavaScript. Please check your browser's settings.</noscript>
